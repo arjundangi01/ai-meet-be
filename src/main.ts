@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -17,6 +18,7 @@ async function bootstrap() {
     },
   );
   await app.register(multiPart);
+  app.use(cookieParser());
   const config = new DocumentBuilder()
     .setTitle('Intellectica')
     .setDescription('The Intellectica API description')

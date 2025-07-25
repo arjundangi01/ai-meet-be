@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { UpdateChatterBoxDto } from './dto/update-chatter-box.dto';
 import axios from 'axios';
-const CHATTER_BOX_API_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODgxMTgyMjYwZDJmN2I2MWJjNGMwNTIiLCJlbWFpbCI6ImFyanVuZGFuZ2k5MDc0NzNAZ21haWwuY29tIiwiaWF0IjoxNzUzMjkwNzg2LCJleHAiOjE3NjEwNjY3ODZ9.OpGyLZHG_0bHXwLsr7PuOhlfIYYopiSDw9S8d4oZTr8';
 import { ChatterBox } from '@chatterboxio/bot';
+import envConfig from 'src/lib/config/env-config';
 
 @Injectable()
 export class ChatterBoxService {
   private readonly chatterBox = ChatterBox({
-    authorizationToken: CHATTER_BOX_API_KEY,
+    authorizationToken: envConfig.CHATTER_BOX_API_KEY,
   });
 
   async create() {
@@ -68,7 +67,7 @@ export class ChatterBoxService {
         `https://bot.chatter-box.io/session/${sessionId}`,
         {
           headers: {
-            Authorization: `Bearer ${CHATTER_BOX_API_KEY}`,
+            Authorization: `Bearer ${envConfig.CHATTER_BOX_API_KEY}`,
             'Content-Type': 'application/json',
           },
         },
