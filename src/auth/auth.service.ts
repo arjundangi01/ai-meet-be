@@ -27,7 +27,7 @@ export class AuthService {
         email: input.email,
       },
     });
-    console.log(user);
+
     if (!user) {
       user = await this.usersService.create({
         email: input.email,

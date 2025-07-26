@@ -7,7 +7,6 @@ import { PrismaService } from 'src/db/db.service';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
   create(input: CreateUserDto) {
-    console.log(input);
     return this.prisma.user.create({
       data: input,
     });
