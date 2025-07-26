@@ -16,8 +16,12 @@ import { SocialLoginDto } from './dto/create-auth.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('social-login')
+  @Post('social-signup')
   async socialLogin(@Body() socialLoginDto: SocialLoginDto) {
-    return this.authService.socialLogin(socialLoginDto);
+    try {
+      return this.authService.socialLogin(socialLoginDto);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

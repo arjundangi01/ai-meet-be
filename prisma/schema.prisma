@@ -7,15 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum USER_ROLE {
+  ADMIN
+  USER
+}
+
 model User {
-  id          String   @id @default(uuid())
-  email       String   @unique
+  id          String    @id @default(uuid())
+  email       String    @unique
   name        String
   password    String?
   firebaseUid String?
   oauth       String?
   accessToken String?
   idToken     String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  role        USER_ROLE @default(USER)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
