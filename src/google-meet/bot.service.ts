@@ -1,48 +1,107 @@
 import { Injectable } from '@nestjs/common';
-import { executablePath } from 'puppeteer';
-import { getStream, launch } from 'puppeteer-stream';
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+import { getStream, launch } from 'puppeteer-stream';
 import * as fs from 'fs';
 import * as path from 'path';
 
 @Injectable()
 export class BotService {
-  constructor() {}
-  async startBotV4() {
+  private browser: any;
+  private page: any;
+
+  private async launchBrowser(): Promise<any> {
+    const browser = await launch(puppeteer, {
+      headless: false,
+
+      executablePath:
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+
+      args: [],
+      defaultViewport: null,
+      ignoreDefaultArgs: ['--disable-extensions'],
+    });
+
+    return browser;
+  }
+
+  async startBot({ meetingId }: { meetingId: string }) {
     const stealthPlugin = StealthPlugin();
     stealthPlugin.enabledEvasions.delete('iframe.contentWindow');
     stealthPlugin.enabledEvasions.delete('media.codecs');
     puppeteer.use(stealthPlugin);
-    const outputPath = path.join(process.cwd(), 'test.webm');
-    const file = fs.createWriteStream(outputPath);
-    const browser = await launch(puppeteer, {
-      executablePath: executablePath(),
-      defaultViewport: {
-        width: 1024,
-        height: 868,
-      },
-    });
-    const page = await browser.newPage();
-    await page.goto('https://meet.google.com/ckc-btpg-zus', {
-      waitUntil: 'networkidle0',
-      timeout: 30000,
-    });
-    const context = page.browser().defaultBrowserContext();
+    this.browser = await this.launchBrowser();
 
-    // const stream = await getStream(page, { audio: true, video: true });
-    console.log('recording');
-    await context.overridePermissions('https://meet.google.com', [
-      'microphone',
-      'camera',
-    ]);
-    // stream.pipe(file);
-    // setTimeout(async () => {
-    // //   stream.destroy();
-    //   await page.close();
-    //   await browser.close();
-    //   file.close();
-    //   console.log('finished');
-    // }, 1000 * 10);
+    this.page = await this.browser.newPage();
+    const navigationPromise = this.page.waitForNavigation();
+    const context = this.browser.defaultBrowserContext();
+
+    await context.overridePermissions('https://meet.google.com/', []);
+
+    await this.page.goto('https://meet.google.com/' + meetingId + '?hl=en', {
+      waitUntil: 'networkidle0',
+      timeout: 10000,
+    });
+
+    await navigationPromise;
+
+    await this.page.keyboard.down('ControlLeft');
+    await this.page.keyboard.press('KeyE');
+    await this.page.keyboard.up('ControlLeft');
+
+    await this.page.keyboard.down('ControlLeft');
+    await this.page.keyboard.press('KeyD');
+    await this.page.keyboard.up('ControlLeft');
+
+    await this.page.click(`input[aria-label="Your name"]`);
+
+    await this.page.type(`input[aria-label="Your name"]`, 'Bot');
+
+    await this.page.evaluate(() => {
+      const spans = Array.from(document.querySelectorAll('span'));
+      const continueBtn = spans.find((span) =>
+        span.textContent?.includes('Continue without microphone and camera'),
+      );
+
+      if (continueBtn) {
+        const button = continueBtn.closest('button');
+        if (button) {
+          (button as HTMLElement).click();
+          console.log(
+            'Clicked fallback: Continue without microphone and camera',
+          );
+        }
+      }
+    });
+
+    await this.page.waitForSelector('button');
+
+    await this.page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll('button'));
+      const askToJoin = buttons.find((btn) =>
+        btn.innerText.includes('Ask to join'),
+      );
+      if (askToJoin) {
+        askToJoin.click();
+      }
+    });
+
+    // check if the bot is in the meeting
+    await this.page.waitForSelector('[aria-label*="Leave call"]', {
+      timeout: 60000,
+    });
+
+    const savePath = path.join(process.cwd(), 'test.webm');
+    const file = fs.createWriteStream(savePath);
+
+    const stream = await getStream(this.page, { audio: true, video: true });
+    stream.pipe(file);
+
+    setTimeout(async () => {
+      console.log('finished');
+      stream.destroy();
+      file.close();
+      await this.browser.close();
+    }, 15000);
   }
 }

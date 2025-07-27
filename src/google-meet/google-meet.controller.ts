@@ -31,11 +31,13 @@ export class GoogleMeetController {
     //     console.log(sessionId, error);
     //   },
     // });
-    await this.googleMeetBot.startBotV2({
+    // await this.googleMeetBot.startBotV2({
+    //   meetingId: createGoogleBotDto.meetingId,
+    // });
+    // await this.googleMeetBot.startBotV3();
+    await this.botService.startBot({
       meetingId: createGoogleBotDto.meetingId,
     });
-    // await this.googleMeetBot.startBotV3();
-    // await this.botService.startBotV4();
     return {
       sessionId,
     };

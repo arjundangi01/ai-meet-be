@@ -7,7 +7,7 @@ import { getStream, launch } from 'puppeteer-stream';
 import * as fs from 'fs';
 import * as path from 'path';
 // import * as PuppeteerScreenRecorder from 'puppeteer-screen-recorder';
-import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder';
+// import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder';
 
 @Injectable()
 export class GoogleMeetBot {
