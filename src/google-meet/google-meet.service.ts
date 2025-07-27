@@ -3,8 +3,10 @@ import { UpdateGoogleMeetDto } from './dto/update-google-meet.dto';
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 import { executablePath } from 'puppeteer';
-puppeteer.use(StealthPlugin());
-
+import { getStream, launch } from 'puppeteer-stream';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as PuppeteerScreenRecorder from 'puppeteer-screen-recorder';
 @Injectable()
 export class GoogleMeetBot {
   private browser: any;
@@ -33,6 +35,10 @@ export class GoogleMeetBot {
       onSessionEnd: (sessionId: string, error: any) => void;
     },
   ) {
+    const stealthPlugin = StealthPlugin();
+    stealthPlugin.enabledEvasions.delete('iframe.contentWindow');
+    stealthPlugin.enabledEvasions.delete('media.codecs');
+    puppeteer.use(stealthPlugin);
     // const puppeteer = new PuppeteerExtra();
     this.browser = await this.launchBrowser();
 
@@ -66,15 +72,15 @@ export class GoogleMeetBot {
     // OPTIONAL: log current URL for debugging
     console.log('Current URL after navigation:', this.page.url());
 
-    // await this.joinMeeting(this.page, {
-    //   maxWaitTime: 15000,
-    //   recordingQuality: 'high',
-    //   audioOnly: false,
-    //   enableVideo: true,
-    //   userAgent:
-    //     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    //   viewport: { width: 1280, height: 720 },
-    // });
+    await this.joinMeeting(this.page, {
+      maxWaitTime: 15000,
+      recordingQuality: 'high',
+      audioOnly: false,
+      enableVideo: true,
+      userAgent:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      viewport: { width: 1280, height: 720 },
+    });
   }
 
   simulateTranscripts(sessionId: string, options: any) {
@@ -166,6 +172,9 @@ export class GoogleMeetBot {
       '--autoplay-policy=no-user-gesture-required',
       '--disable-web-security',
       '--disable-features=VizDisplayCompositor',
+      '--use-fake-ui-for-media-stream',
+      '--disable-infobars',
+      '--disable-extensions',
     ];
     args.push('--disable-notifications', '--mute-audio', '--enable-automation');
 
@@ -174,9 +183,10 @@ export class GoogleMeetBot {
       args.push('--disable-features=VizDisplayCompositor');
     }
 
-    const browser = await puppeteer.launch({
+    const browser = await launch(puppeteer, {
       headless: envConfig.chrome.headless,
       // executablePath: envConfig.chrome.executablePath,
+      executablePath: executablePath(),
       args,
       defaultViewport: null,
       ignoreDefaultArgs: ['--disable-extensions'],
@@ -381,8 +391,151 @@ export class GoogleMeetBot {
     } catch (error) {}
   }
 
-  async startBotV2() {
-    this.browser = await puppeteer.launch({
+  async startBotV2({ meetingId }: { meetingId: string }) {
+    const outputPath = path.join(process.cwd(), 'test.webm');
+    const file = fs.createWriteStream(outputPath);
+    const stealthPlugin = StealthPlugin();
+    stealthPlugin.enabledEvasions.delete('iframe.contentWindow');
+    stealthPlugin.enabledEvasions.delete('media.codecs');
+    puppeteer.use(stealthPlugin);
+    this.browser = await this.launchBrowser();
+
+    this.page = await this.browser.newPage();
+    const navigationPromise = this.page.waitForNavigation();
+    const context = this.browser.defaultBrowserContext();
+
+    await context.overridePermissions('https://meet.google.com/', []);
+
+    // going to Meet after signing in
+    // await this.page.waitForTimeout(2500);
+    await this.page.goto('https://meet.google.com/' + meetingId + '?hl=en', {
+      waitUntil: 'networkidle0',
+      timeout: 10000,
+    });
+
+    await navigationPromise;
+
+    // await this.page.bringToFront();
+
+    // turn off cam using Ctrl+E
+    await this.page.keyboard.down('ControlLeft');
+    await this.page.keyboard.press('KeyE');
+    await this.page.keyboard.up('ControlLeft');
+
+    //turn off mic using Ctrl+D
+    await this.page.keyboard.down('ControlLeft');
+    await this.page.keyboard.press('KeyD');
+    await this.page.keyboard.up('ControlLeft');
+
+    // await this.page.evaluate(() => {
+    //   // Try to find and click camera/mic toggle buttons
+    //   const micButton = document.querySelector(
+    //     '[data-is-muted="false"]',
+    //   ) as HTMLElement;
+    //   const cameraButton = document.querySelector(
+    //     '[data-is-video-muted="false"]',
+    //   ) as HTMLElement;
+
+    //   if (micButton) micButton.click();
+    //   if (cameraButton) cameraButton.click();
+    // });
+    // await this.page.evaluate(() => {
+    //   const allButtons = Array.from(
+    //     document.querySelectorAll('div[role="button"], button'),
+    //   );
+    //   const cameraBtn = allButtons.find(
+    //     (btn) =>
+    //       (btn as HTMLElement).innerText.toLowerCase().includes('camera') ||
+    //       btn
+    //         .getAttribute('aria-label')
+    //         ?.toLowerCase()
+    //         .includes('turn off camera') ||
+    //       btn.querySelector('svg use[href*="#cam"]') || // handles SVG icons
+    //       btn.querySelector('[data-tooltip*="camera"]'),
+    //   );
+
+    //   if (cameraBtn) {
+    //     (cameraBtn as HTMLElement).click();
+    //   } else {
+    //     console.log('camera button not found');
+    //   }
+    // });
+
+    //click on input field to enter name
+    await this.page.click(`input[aria-label="Your name"]`);
+
+    //enter name
+    await this.page.type(`input[aria-label="Your name"]`, 'Bot');
+
+    await this.page.waitForSelector('button');
+
+    await this.page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll('button'));
+      const askToJoin = buttons.find((btn) =>
+        btn.innerText.includes('Ask to join'),
+      );
+      if (askToJoin) {
+        askToJoin.click();
+      }
+    });
+
+    const stream = await getStream(this.page, {
+      audio: true,
+      mimeType: 'audio/webm',
+      video: false,
+    });
+    console.log('recording');
+
+    stream.pipe(file);
+    setTimeout(async () => {
+      await stream.destroy();
+      file.close();
+      console.log('finished');
+    }, 1000 * 30);
+
+    const recorder = new PuppeteerScreenRecorder.PuppeteerScreenRecorder(
+      this.page,
+    );
+    // await recorder.start('./report/video/simple.webm'); // supports extension - mp4, avi, webm and mov
+
+    // const devices = await page.evaluate(() =>
+    //   navigator.mediaDevices.getUserMedia(
+    //     { audio: true }
+    //   )
+    // )
+
+    // let x = await navigator.mediaDevices.getUserMedia({audio: true});
+
+    // console.log(x, "Available devices");
+    // navigator.mediaDevices.getUserMedia({
+    //   video: false,
+    //   audio: true
+    // }).then(async function (stream) {
+    //   let recorder = RecordRTC(stream, {
+    //     type: 'audio'
+    //   });
+    //   recorder.startRecording();
+
+    //   const sleep = m => new Promise(r => setTimeout(r, m));
+    //   await sleep(3000);
+
+    //   recorder.stopRecording(function () {
+    //     let blob = recorder.getBlob();
+    //     invokeSaveAsDialog(blob);
+    //   });
+    // });
+
+    // setTimeout(async () => {
+    //   // await recorder.stop();
+    //   // await stream.destroy();
+    //   // file.close();
+    //   console.log('finished');
+    //   await this.browser.close();
+    // }, 150000);
+  }
+  async startBotV3() {
+    // const file = fs.createWriteStream('./test.webm');
+    const browser = await puppeteer.launch({
       headless: false,
       defaultViewport: null,
       devtools: false,
@@ -395,9 +548,9 @@ export class GoogleMeetBot {
       executablePath: executablePath(),
     });
 
-    this.page = await this.browser.newPage();
-    const navigationPromise = this.page.waitForNavigation();
-    const context = this.browser.defaultBrowserContext();
+    const page = await browser.newPage();
+    const navigationPromise = page.waitForNavigation();
+    const context = browser.defaultBrowserContext();
 
     await context.overridePermissions('https://meet.google.com/', [
       'microphone',
@@ -406,48 +559,51 @@ export class GoogleMeetBot {
     ]);
 
     // going to Meet after signing in
-    // await this.page.waitForTimeout(2500);
-    await this.page.goto('https://meet.google.com/wzn-mori-zho' + '?hl=en', {
+    // await page.waitForTimeout(2500);
+    await page.goto('https://meet.google.com/ckc-btpg-zus' + '?hl=en', {
       waitUntil: 'networkidle0',
       timeout: 10000,
     });
-    await this.page.setBypassCSP(true);
 
     await navigationPromise;
 
-    await this.page.waitForSelector('input[aria-label="Your name"]', {
+    await page.waitForSelector('input[aria-label="Your name"]', {
       visible: true,
       timeout: 50000,
       hidden: false,
     });
 
     // turn off cam using Ctrl+E
-    await this.page.waitForTimeout(1000);
-    await this.page.keyboard.down('ControlLeft');
-    await this.page.keyboard.press('KeyE');
-    await this.page.keyboard.up('ControlLeft');
-    await this.page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
+    await page.keyboard.down('ControlLeft');
+    await page.keyboard.press('KeyE');
+    await page.keyboard.up('ControlLeft');
+    // await page.waitForTimeout(1000);
 
     //turn off mic using Ctrl+D
-    await this.page.waitForTimeout(1000);
-    await this.page.keyboard.down('ControlLeft');
-    await this.page.keyboard.press('KeyD');
-    await this.page.keyboard.up('ControlLeft');
-    await this.page.waitForTimeout(1000);
+    // await page.waitForTimeout(1000);
+    await page.keyboard.down('ControlLeft');
+    await page.keyboard.press('KeyD');
+    await page.keyboard.up('ControlLeft');
+    // await page.waitForTimeout(1000);
 
     //click on input field to enter name
-    await this.page.click(`input[aria-label="Your name"]`);
+    await page.click(`input[aria-label="Your name"]`);
 
     //enter name
-    await this.page.type(`input[aria-label="Your name"]`, 'Bot');
+    await page.type(`input[aria-label="Your name"]`, 'Bot');
 
     //click on ask to join button
-    await this.page.click(
+    await page.click(
       `button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 jEvJdc QJgqC"]`,
     );
 
-    // const stream = await getStream(page, { audio: true, mimeType: "audio/mp3" });
-    // console.log("recording");
+    const stream = await getStream(page, {
+      audio: true,
+      mimeType: 'video/mp4',
+      video: true,
+    });
+    console.log('recording');
 
     // stream.pipe(file);
     // setTimeout(async () => {
@@ -488,10 +644,10 @@ export class GoogleMeetBot {
 
     setTimeout(async () => {
       // await recorder.stop();
-      // await stream.destroy();
+      await stream.destroy();
       // file.close();
       console.log('finished');
-      await this.browser.close();
+      await browser.close();
     }, 15000);
   }
 }

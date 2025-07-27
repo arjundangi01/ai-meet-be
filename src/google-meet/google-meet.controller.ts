@@ -10,10 +10,14 @@ import {
 import { GoogleMeetBot } from './google-meet.service';
 import { CreateGoogleBotDto } from './dto/create-google-meet.dto';
 import { UpdateGoogleMeetDto } from './dto/update-google-meet.dto';
+import { BotService } from './bot.service';
 
 @Controller('google-meet')
 export class GoogleMeetController {
-  constructor(private readonly googleMeetBot: GoogleMeetBot) {}
+  constructor(
+    private readonly googleMeetBot: GoogleMeetBot,
+    private readonly botService: BotService,
+  ) {}
 
   @Post('start')
   async start(@Body() createGoogleBotDto: CreateGoogleBotDto) {
@@ -27,7 +31,11 @@ export class GoogleMeetController {
     //     console.log(sessionId, error);
     //   },
     // });
-    await this.googleMeetBot.startBotV2();
+    await this.googleMeetBot.startBotV2({
+      meetingId: createGoogleBotDto.meetingId,
+    });
+    // await this.googleMeetBot.startBotV3();
+    // await this.botService.startBotV4();
     return {
       sessionId,
     };
