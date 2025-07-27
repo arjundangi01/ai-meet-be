@@ -6,7 +6,9 @@ import { executablePath } from 'puppeteer';
 import { getStream, launch } from 'puppeteer-stream';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as PuppeteerScreenRecorder from 'puppeteer-screen-recorder';
+// import * as PuppeteerScreenRecorder from 'puppeteer-screen-recorder';
+import { PuppeteerScreenRecorder } from 'puppeteer-screen-recorder';
+
 @Injectable()
 export class GoogleMeetBot {
   private browser: any;
@@ -154,29 +156,34 @@ export class GoogleMeetBot {
       },
     };
     const args = [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--no-first-run',
-      '--no-zygote',
-      '--disable-gpu',
-      '--disable-background-timer-throttling',
-      '--disable-backgrounding-occluded-windows',
-      '--disable-renderer-backgrounding',
-      '--disable-features=TranslateUI',
-      '--disable-ipc-flooding-protection',
-      '--use-fake-ui-for-media-stream',
-      '--use-fake-device-for-media-stream',
-      '--allow-running-insecure-content',
-      '--autoplay-policy=no-user-gesture-required',
-      '--disable-web-security',
-      '--disable-features=VizDisplayCompositor',
-      '--use-fake-ui-for-media-stream',
-      '--disable-infobars',
-      '--disable-extensions',
+      // '--no-sandbox',
+      // '--disable-setuid-sandbox',
+      // '--disable-dev-shm-usage',
+      // '--disable-accelerated-2d-canvas',
+      // '--no-first-run',
+      // '--no-zygote',
+      // '--disable-gpu',
+      // '--disable-background-timer-throttling',
+      // '--disable-backgrounding-occluded-windows',
+      // '--disable-renderer-backgrounding',
+      // '--disable-features=TranslateUI',
+      // '--disable-ipc-flooding-protection',
+      // '--use-fake-ui-for-media-stream',
+      // '--use-fake-device-for-media-stream',
+      // '--allow-running-insecure-content',
+      // '--autoplay-policy=no-user-gesture-required',
+      // '--disable-web-security',
+      // '--disable-features=VizDisplayCompositor',
+      // '--disable-infobars',
+      // '--disable-extensions',
+      // '--no-sandbox',
+      // '--autoplay-policy=no-user-gesture-required',
+      // '--disable-features=TranslateUI',
+      // '--disable-background-timer-throttling',
+      // '--disable-renderer-backgrounding',
+      // '--disable-backgrounding-occluded-windows',
     ];
-    args.push('--disable-notifications', '--mute-audio', '--enable-automation');
+    // args.push('--disable-notifications', '--mute-audio', '--enable-automation');
 
     if (envConfig.chrome.disableWebSecurity) {
       args.push('--disable-web-security');
@@ -186,7 +193,10 @@ export class GoogleMeetBot {
     const browser = await launch(puppeteer, {
       headless: envConfig.chrome.headless,
       // executablePath: envConfig.chrome.executablePath,
-      executablePath: executablePath(),
+      // executablePath: executablePath(),
+      executablePath:
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+
       args,
       defaultViewport: null,
       ignoreDefaultArgs: ['--disable-extensions'],
@@ -392,8 +402,6 @@ export class GoogleMeetBot {
   }
 
   async startBotV2({ meetingId }: { meetingId: string }) {
-    const outputPath = path.join(process.cwd(), 'test.webm');
-    const file = fs.createWriteStream(outputPath);
     const stealthPlugin = StealthPlugin();
     stealthPlugin.enabledEvasions.delete('iframe.contentWindow');
     stealthPlugin.enabledEvasions.delete('media.codecs');
@@ -479,175 +487,138 @@ export class GoogleMeetBot {
       }
     });
 
-    const stream = await getStream(this.page, {
-      audio: true,
-      mimeType: 'audio/webm',
-      video: false,
-    });
-    console.log('recording');
+    const savePath = path.join(process.cwd(), 'test.webm');
+    const file = fs.createWriteStream(savePath);
+    // await recorder.start(savePath);
 
+    const stream = await getStream(this.page, { audio: true, video: true });
+    console.log('recording');
     stream.pipe(file);
+
+    // or
+
     setTimeout(async () => {
-      await stream.destroy();
+      console.log('finished');
+      stream.destroy();
       file.close();
-      console.log('finished');
-    }, 1000 * 30);
-
-    const recorder = new PuppeteerScreenRecorder.PuppeteerScreenRecorder(
-      this.page,
-    );
-    // await recorder.start('./report/video/simple.webm'); // supports extension - mp4, avi, webm and mov
-
-    // const devices = await page.evaluate(() =>
-    //   navigator.mediaDevices.getUserMedia(
-    //     { audio: true }
-    //   )
-    // )
-
-    // let x = await navigator.mediaDevices.getUserMedia({audio: true});
-
-    // console.log(x, "Available devices");
-    // navigator.mediaDevices.getUserMedia({
-    //   video: false,
-    //   audio: true
-    // }).then(async function (stream) {
-    //   let recorder = RecordRTC(stream, {
-    //     type: 'audio'
-    //   });
-    //   recorder.startRecording();
-
-    //   const sleep = m => new Promise(r => setTimeout(r, m));
-    //   await sleep(3000);
-
-    //   recorder.stopRecording(function () {
-    //     let blob = recorder.getBlob();
-    //     invokeSaveAsDialog(blob);
-    //   });
-    // });
-
-    // setTimeout(async () => {
-    //   // await recorder.stop();
-    //   // await stream.destroy();
-    //   // file.close();
-    //   console.log('finished');
-    //   await this.browser.close();
-    // }, 150000);
-  }
-  async startBotV3() {
-    // const file = fs.createWriteStream('./test.webm');
-    const browser = await puppeteer.launch({
-      headless: false,
-      defaultViewport: null,
-      devtools: false,
-      args: [
-        '--window-size=1920,1080',
-        '--window-position=1921,0',
-        '--autoplay-policy=no-user-gesture-required',
-      ],
-      ignoreDefaultArgs: ['--mute-audio'],
-      executablePath: executablePath(),
-    });
-
-    const page = await browser.newPage();
-    const navigationPromise = page.waitForNavigation();
-    const context = browser.defaultBrowserContext();
-
-    await context.overridePermissions('https://meet.google.com/', [
-      'microphone',
-      'camera',
-      'notifications',
-    ]);
-
-    // going to Meet after signing in
-    // await page.waitForTimeout(2500);
-    await page.goto('https://meet.google.com/ckc-btpg-zus' + '?hl=en', {
-      waitUntil: 'networkidle0',
-      timeout: 10000,
-    });
-
-    await navigationPromise;
-
-    await page.waitForSelector('input[aria-label="Your name"]', {
-      visible: true,
-      timeout: 50000,
-      hidden: false,
-    });
-
-    // turn off cam using Ctrl+E
-    // await page.waitForTimeout(1000);
-    await page.keyboard.down('ControlLeft');
-    await page.keyboard.press('KeyE');
-    await page.keyboard.up('ControlLeft');
-    // await page.waitForTimeout(1000);
-
-    //turn off mic using Ctrl+D
-    // await page.waitForTimeout(1000);
-    await page.keyboard.down('ControlLeft');
-    await page.keyboard.press('KeyD');
-    await page.keyboard.up('ControlLeft');
-    // await page.waitForTimeout(1000);
-
-    //click on input field to enter name
-    await page.click(`input[aria-label="Your name"]`);
-
-    //enter name
-    await page.type(`input[aria-label="Your name"]`, 'Bot');
-
-    //click on ask to join button
-    await page.click(
-      `button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 jEvJdc QJgqC"]`,
-    );
-
-    const stream = await getStream(page, {
-      audio: true,
-      mimeType: 'video/mp4',
-      video: true,
-    });
-    console.log('recording');
-
-    // stream.pipe(file);
-    // setTimeout(async () => {
-    //   await stream.destroy();
-    //   file.close();
-    //   console.log("finished");
-    // }, 1000 * 30);
-
-    // const recorder = new PuppeteerScreenRecorder.PuppeteerScreenRecorder(page);
-    // await recorder.start('./report/video/simple.webm'); // supports extension - mp4, avi, webm and mov
-
-    // const devices = await page.evaluate(() =>
-    //   navigator.mediaDevices.getUserMedia(
-    //     { audio: true }
-    //   )
-    // )
-
-    // let x = await navigator.mediaDevices.getUserMedia({audio: true});
-
-    // console.log(x, "Available devices");
-    // navigator.mediaDevices.getUserMedia({
-    //   video: false,
-    //   audio: true
-    // }).then(async function (stream) {
-    //   let recorder = RecordRTC(stream, {
-    //     type: 'audio'
-    //   });
-    //   recorder.startRecording();
-
-    //   const sleep = m => new Promise(r => setTimeout(r, m));
-    //   await sleep(3000);
-
-    //   recorder.stopRecording(function () {
-    //     let blob = recorder.getBlob();
-    //     invokeSaveAsDialog(blob);
-    //   });
-    // });
-
-    setTimeout(async () => {
-      // await recorder.stop();
-      await stream.destroy();
-      // file.close();
-      console.log('finished');
-      await browser.close();
+      await this.browser.close();
     }, 15000);
   }
+  // async startBotV3() {
+  //   // const file = fs.createWriteStream('./test.webm');
+  //   const browser = await puppeteer.launch({
+  //     headless: false,
+  //     defaultViewport: null,
+  //     devtools: false,
+  //     args: [
+  //       '--window-size=1920,1080',
+  //       '--window-position=1921,0',
+  //       '--autoplay-policy=no-user-gesture-required',
+  //     ],
+  //     ignoreDefaultArgs: ['--mute-audio'],
+  //     executablePath: executablePath(),
+  //   });
+
+  //   const page = await browser.newPage();
+  //   const navigationPromise = page.waitForNavigation();
+  //   const context = browser.defaultBrowserContext();
+
+  //   await context.overridePermissions('https://meet.google.com/', [
+  //     'microphone',
+  //     'camera',
+  //     'notifications',
+  //   ]);
+
+  //   // going to Meet after signing in
+  //   // await page.waitForTimeout(2500);
+  //   await page.goto('https://meet.google.com/ckc-btpg-zus' + '?hl=en', {
+  //     waitUntil: 'networkidle0',
+  //     timeout: 10000,
+  //   });
+
+  //   await navigationPromise;
+
+  //   await page.waitForSelector('input[aria-label="Your name"]', {
+  //     visible: true,
+  //     timeout: 50000,
+  //     hidden: false,
+  //   });
+
+  //   // turn off cam using Ctrl+E
+  //   // await page.waitForTimeout(1000);
+  //   await page.keyboard.down('ControlLeft');
+  //   await page.keyboard.press('KeyE');
+  //   await page.keyboard.up('ControlLeft');
+  //   // await page.waitForTimeout(1000);
+
+  //   //turn off mic using Ctrl+D
+  //   // await page.waitForTimeout(1000);
+  //   await page.keyboard.down('ControlLeft');
+  //   await page.keyboard.press('KeyD');
+  //   await page.keyboard.up('ControlLeft');
+  //   // await page.waitForTimeout(1000);
+
+  //   //click on input field to enter name
+  //   await page.click(`input[aria-label="Your name"]`);
+
+  //   //enter name
+  //   await page.type(`input[aria-label="Your name"]`, 'Bot');
+
+  //   //click on ask to join button
+  //   await page.click(
+  //     `button[class="VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 jEvJdc QJgqC"]`,
+  //   );
+
+  //   const stream = await getStream(page, {
+  //     audio: true,
+  //     mimeType: 'video/mp4',
+  //     video: true,
+  //   });
+  //   console.log('recording');
+
+  //   // stream.pipe(file);
+  //   // setTimeout(async () => {
+  //   //   await stream.destroy();
+  //   //   file.close();
+  //   //   console.log("finished");
+  //   // }, 1000 * 30);
+
+  //   // const recorder = new PuppeteerScreenRecorder.PuppeteerScreenRecorder(page);
+  //   // await recorder.start('./report/video/simple.webm'); // supports extension - mp4, avi, webm and mov
+
+  //   // const devices = await page.evaluate(() =>
+  //   //   navigator.mediaDevices.getUserMedia(
+  //   //     { audio: true }
+  //   //   )
+  //   // )
+
+  //   // let x = await navigator.mediaDevices.getUserMedia({audio: true});
+
+  //   // console.log(x, "Available devices");
+  //   // navigator.mediaDevices.getUserMedia({
+  //   //   video: false,
+  //   //   audio: true
+  //   // }).then(async function (stream) {
+  //   //   let recorder = RecordRTC(stream, {
+  //   //     type: 'audio'
+  //   //   });
+  //   //   recorder.startRecording();
+
+  //   //   const sleep = m => new Promise(r => setTimeout(r, m));
+  //   //   await sleep(3000);
+
+  //   //   recorder.stopRecording(function () {
+  //   //     let blob = recorder.getBlob();
+  //   //     invokeSaveAsDialog(blob);
+  //   //   });
+  //   // });
+
+  //   setTimeout(async () => {
+  //     // await recorder.stop();
+  //     await stream.destroy();
+  //     // file.close();
+  //     console.log('finished');
+  //     await browser.close();
+  //   }, 15000);
+  // }
 }
