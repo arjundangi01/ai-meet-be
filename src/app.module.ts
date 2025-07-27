@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { PrismaModule } from './db/db.module';
 import { ConfigModule } from '@nestjs/config';
 import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
+import { GoogleMeetModule } from './google-meet/google-meet.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
     PrismaModule,
     ConfigModule,
     GoogleCalendarModule,
+    GoogleMeetModule,
   ],
   controllers: [AppController],
   providers: [AppService],
