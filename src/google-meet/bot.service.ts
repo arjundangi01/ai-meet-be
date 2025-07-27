@@ -4,6 +4,7 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 import { getStream, launch } from 'puppeteer-stream';
 import * as fs from 'fs';
 import * as path from 'path';
+import { exec } from 'child_process';
 
 @Injectable()
 export class BotService {
@@ -26,6 +27,26 @@ export class BotService {
   }
 
   async startBot({ meetingId }: { meetingId: string }) {
+    const dockerImage = 'my-puppeteer-bot';
+
+    const dockerContainer = `puppeteer-container-${meetingId}-${Date.now()}`;
+    const saveVolume = path.join(process.cwd(), 'recordings');
+    await fs.promises.mkdir(saveVolume, { recursive: true });
+    const command = `
+      docker run --rm \
+        --name ${dockerContainer} \
+        -e MEETING_ID=${meetingId} \
+        -v ${saveVolume}:/app \
+        ${dockerImage}
+    `;
+
+    exec(command, (err, stdout, stderr) => {
+      if (err) {
+        console.error('Error running docker command:', err);
+        return;
+      }
+      console.log('Docker command output:', stdout);
+    });
     const stealthPlugin = StealthPlugin();
     stealthPlugin.enabledEvasions.delete('iframe.contentWindow');
     stealthPlugin.enabledEvasions.delete('media.codecs');
@@ -91,7 +112,10 @@ export class BotService {
       timeout: 60000,
     });
 
-    const savePath = path.join(process.cwd(), 'test.webm');
+    const savePath = path.join(
+      process.cwd(),
+      `${meetingId}-${Date.now()}.webm`,
+    );
     const file = fs.createWriteStream(savePath);
 
     const stream = await getStream(this.page, { audio: true, video: true });
