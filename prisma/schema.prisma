@@ -13,15 +13,45 @@ enum USER_ROLE {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  email       String    @unique
+  id          String        @id @default(uuid())
+  email       String        @unique
   name        String
   password    String?
   firebaseUid String?
   oauth       String?
   accessToken String?
   idToken     String?
-  role        USER_ROLE @default(USER)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  role        USER_ROLE     @default(USER)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  meetings    UserMeeting[]
+}
+
+model Meeting {
+  id           String        @id @default(uuid())
+  userMeetings UserMeeting[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model UserMeeting {
+  id         String      @id @default(uuid())
+  userId     String
+  meetingId  String
+  meeting    Meeting     @relation(fields: [meetingId], references: [id])
+  user       User        @relation(fields: [userId], references: [id])
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  recordings Recording[]
+}
+
+model Recording {
+  id            String      @id @default(uuid())
+  fileUrl       String?
+  transcript    Json?
+  summary       String?
+  userMeetingId String
+  userMeeting   UserMeeting @relation(fields: [userMeetingId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
