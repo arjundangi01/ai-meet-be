@@ -1,0 +1,63 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Recording {
+  id: String!
+  fileUrl: String
+  transcript: String
+  summary: String
+  userMeetingId: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type PageInfo {
+  afterCursor: String
+  beforeCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+}
+
+type RecordingEdge {
+  cursor: String!
+  node: Recording!
+}
+
+type PaginatedRecordingResponse {
+  edges: [RecordingEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  pageSize: Int!
+  totalPage: Int!
+}
+
+type Query {
+  recordings(input: GetRecordingsInput!): PaginatedRecordingResponse!
+  recording(id: Int!): Recording!
+}
+
+input GetRecordingsInput {
+  first: Int
+  after: String
+  before: Float
+  last: Int
+  meetingId: String
+}
+
+type Mutation {
+  createRecording(createRecordingInput: CreateRecordingInput!): Recording!
+  updateRecording(updateRecordingInput: UpdateRecordingInput!): Recording!
+  removeRecording(id: Int!): Recording!
+}
+
+input CreateRecordingInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateRecordingInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}

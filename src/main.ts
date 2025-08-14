@@ -17,7 +17,7 @@ async function bootstrap() {
     },
   );
   await app.enableCors();
-  await app.register(multiPart);
+  await app.register(multiPart as any);
   const config = new DocumentBuilder()
     .setTitle('Intellectica')
     .setDescription('The Intellectica API description')

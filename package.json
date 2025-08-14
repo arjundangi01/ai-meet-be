@@ -25,12 +25,16 @@
     "prisma:formate": "npx prisma format"
   },
   "dependencies": {
+    "@apollo/server": "^4.12.2",
+    "@as-integrations/fastify": "^2.1.1",
     "@chatterboxio/bot": "^1.2.0",
     "@fastify/multipart": "^9.0.3",
     "@fastify/static": "^8.2.0",
+    "@nestjs/apollo": "^13.1.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/graphql": "^13.1.0",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^11.0.5",
@@ -45,6 +49,7 @@
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.1",
     "googleapis": "^154.0.0",
+    "graphql": "^16.11.0",
     "passport-jwt": "^4.0.1",
     "puppeteer": "^20.9.0",
     "puppeteer-extra": "^3.3.4",
@@ -53,7 +58,8 @@
     "puppeteer-stream": "^3.0.20",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "ts-morph": "^25.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
