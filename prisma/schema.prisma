@@ -29,6 +29,7 @@ model User {
 
 model Meeting {
   id           String        @id @default(uuid())
+  googleId     String?
   userMeetings UserMeeting[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt

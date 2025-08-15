@@ -11,6 +11,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { RecordingModule } from './recording/recording.module';
+import { MeetingModule } from './meeting/meeting.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { RecordingModule } from './recording/recording.module';
       },
     }),
     RecordingModule,
+    MeetingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
