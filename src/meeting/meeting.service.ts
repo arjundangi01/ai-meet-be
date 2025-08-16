@@ -2,9 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { CreateMeetingInput } from './dto/create-meeting.input';
 import { UpdateMeetingInput } from './dto/update-meeting.input';
 import { JoinMeetingInput } from './dto/join-meeting.input';
+import { PrismaService } from 'src/db/db.service';
+import { DockerodeService } from 'src/dockerode/dockerode.service';
 
 @Injectable()
 export class MeetingService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly dockerodeService: DockerodeService,
+  ) {}
   create(createMeetingInput: CreateMeetingInput) {
     return 'This action adds a new meeting';
   }
@@ -25,7 +31,40 @@ export class MeetingService {
     return `This action removes a #${id} meeting`;
   }
 
-  joinMeeting(joinMeetingInput: JoinMeetingInput) {
+  async joinMeeting(joinMeetingInput: JoinMeetingInput, userId: string) {
+    const { userMeeting, meeting } = await this.prisma.$transaction(
+      async (tx) => {
+        let meeting = await tx.meeting.findUnique({
+          where: {
+            id: joinMeetingInput.meetingId,
+          },
+        });
+        if (!meeting) {
+          meeting = await tx.meeting.create({
+            data: {
+              googleId: joinMeetingInput.meetingId,
+            },
+          });
+        }
+        const userMeeting = await tx.userMeeting.create({
+          data: {
+            userId,
+            meetingId: meeting.id,
+          },
+        });
+        return {
+          userMeeting,
+          meeting,
+        };
+      },
+    );
+    //  create container
+    const container = this.dockerodeService.createContainer({
+      userMeeting,
+      userId,
+      googleId: meeting.googleId,
+    });
+
     return `This action joins a #${joinMeetingInput.meetingId} meeting`;
   }
 }

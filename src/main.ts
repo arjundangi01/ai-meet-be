@@ -7,6 +7,8 @@ import {
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import multiPart from '@fastify/multipart';
+import envConfig from './lib/config/env-config';
+import { ENV } from './lib/enums/common';
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -18,15 +20,18 @@ async function bootstrap() {
   );
   await app.enableCors();
   await app.register(multiPart as any);
-  const config = new DocumentBuilder()
-    .setTitle('Intellectica')
-    .setDescription('The Intellectica API description')
-    .setVersion('0.1')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('docs', app, document);
+  if (envConfig.NODE_ENV === ENV.DEVELOPMENT) {
+    const config = new DocumentBuilder()
+      .setTitle('replay ai')
+      .setDescription('The replay ai API description')
+      .setVersion('0.1')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('docs', app, document);
+  }
+
   // app.useBodyParser('application/json', { bodyLimit: 10 * 1000 * 1024 });
 
   await app.listen(8989, '0.0.0.0');

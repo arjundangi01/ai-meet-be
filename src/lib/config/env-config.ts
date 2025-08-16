@@ -15,6 +15,9 @@ type ConfigurationType = {
   GOOGLE_CALLBACK_URL: string;
   GOOGLE_VERIFY_OAUTH_URL: string;
   JWT_SECRET: string;
+  GCP_BUCKET_NAME: string;
+  GCP_PROJECT_ID: string;
+  NODE_ENV: string;
 };
 
 const config: ConfigurationType = {
@@ -24,6 +27,9 @@ const config: ConfigurationType = {
   GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
   GOOGLE_VERIFY_OAUTH_URL: process.env.GOOGLE_VERIFY_OAUTH_URL,
   JWT_SECRET: process.env.JWT_SECRET,
+  GCP_BUCKET_NAME: process.env.GCP_BUCKET_NAME,
+  GCP_PROJECT_ID: process.env.GCP_PROJECT_ID,
+  NODE_ENV: process.env.NODE_ENV,
 };
 
 export default config;

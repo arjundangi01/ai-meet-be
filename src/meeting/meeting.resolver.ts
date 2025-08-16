@@ -42,6 +42,6 @@ export class MeetingResolver {
   }
   @Mutation(() => Meeting, { name: 'joinMeeting' })
   joinMeeting(@Args('joinMeetingInput') joinMeetingInput: JoinMeetingInput) {
-    return this.meetingService.joinMeeting(joinMeetingInput);
+    return this.meetingService.joinMeeting(joinMeetingInput, '');
   }
 }

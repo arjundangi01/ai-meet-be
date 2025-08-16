@@ -12,6 +12,8 @@ import { join } from 'path';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { RecordingModule } from './recording/recording.module';
 import { MeetingModule } from './meeting/meeting.module';
+import { WebhookModule } from './webhook/webhook.module';
+import { DockerodeModule } from './dockerode/dockerode.module';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { MeetingModule } from './meeting/meeting.module';
     }),
     RecordingModule,
     MeetingModule,
+    WebhookModule,
+    DockerodeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
