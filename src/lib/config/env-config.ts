@@ -18,6 +18,9 @@ type ConfigurationType = {
   GCP_BUCKET_NAME: string;
   GCP_PROJECT_ID: string;
   NODE_ENV: string;
+  DOCKER_IMAGE_NAME: string;
+  DOCKER_USERNAME: string;
+  DOCKER_PASSWORD: string;
 };
 
 const config: ConfigurationType = {
@@ -30,6 +33,9 @@ const config: ConfigurationType = {
   GCP_BUCKET_NAME: process.env.GCP_BUCKET_NAME,
   GCP_PROJECT_ID: process.env.GCP_PROJECT_ID,
   NODE_ENV: process.env.NODE_ENV,
+  DOCKER_IMAGE_NAME: process.env.DOCKER_IMAGE_NAME,
+  DOCKER_USERNAME: process.env.DOCKER_USERNAME,
+  DOCKER_PASSWORD: process.env.DOCKER_PASSWORD,
 };
 
 export default config;

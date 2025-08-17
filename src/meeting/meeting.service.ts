@@ -39,6 +39,7 @@ export class MeetingService {
             id: joinMeetingInput.meetingId,
           },
         });
+
         if (!meeting) {
           meeting = await tx.meeting.create({
             data: {
@@ -58,6 +59,7 @@ export class MeetingService {
         };
       },
     );
+    console.log('userMeeting -->', userMeeting, meeting);
     //  create container
     const container = this.dockerodeService.createContainer({
       userMeeting,
@@ -65,6 +67,6 @@ export class MeetingService {
       googleId: meeting.googleId,
     });
 
-    return `This action joins a #${joinMeetingInput.meetingId} meeting`;
+    return userMeeting;
   }
 }

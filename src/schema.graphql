@@ -34,13 +34,12 @@ type PaginatedRecordingResponse {
 
 type Meeting {
   """Example field (placeholder)"""
-  exampleField: Int!
+  id: Int!
 }
 
 type Query {
   recordings(input: GetRecordingsInput!): PaginatedRecordingResponse!
   recording(id: Int!): Recording!
-  meeting(id: Int!): Meeting!
 }
 
 input GetRecordingsInput {
@@ -55,10 +54,7 @@ type Mutation {
   createRecording(createRecordingInput: CreateRecordingInput!): Recording!
   updateRecording(updateRecordingInput: UpdateRecordingInput!): Recording!
   removeRecording(id: Int!): Recording!
-  createMeeting(createMeetingInput: CreateMeetingInput!): Meeting!
-  updateMeeting(updateMeetingInput: UpdateMeetingInput!): Meeting!
-  removeMeeting(id: Int!): Meeting!
-  joinMeeting(joinMeetingInput: JoinMeetingInput!): Meeting!
+  joinMeeting(input: JoinMeetingInput!): Meeting!
 }
 
 input CreateRecordingInput {
@@ -67,17 +63,6 @@ input CreateRecordingInput {
 }
 
 input UpdateRecordingInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input CreateMeetingInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateMeetingInput {
   """Example field (placeholder)"""
   exampleField: Int
   id: Int!

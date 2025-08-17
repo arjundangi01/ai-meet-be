@@ -4,44 +4,26 @@ import { Meeting } from './entities/meeting.entity';
 import { CreateMeetingInput } from './dto/create-meeting.input';
 import { UpdateMeetingInput } from './dto/update-meeting.input';
 import { JoinMeetingInput } from './dto/join-meeting.input';
+import { UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { CurrentUser } from 'src/auth/dto/current-user.decorator';
+import { User } from 'src/users/entities/user.entity';
 
 @Resolver(() => Meeting)
 export class MeetingResolver {
   constructor(private readonly meetingService: MeetingService) {}
 
-  @Mutation(() => Meeting)
-  createMeeting(
-    @Args('createMeetingInput') createMeetingInput: CreateMeetingInput,
-  ) {
-    return this.meetingService.create(createMeetingInput);
-  }
-
-  @Query(() => [Meeting], { name: 'meeting' })
-  findAll() {
-    return this.meetingService.findAll();
-  }
-
-  @Query(() => Meeting, { name: 'meeting' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.meetingService.findOne(id);
-  }
-
-  @Mutation(() => Meeting)
-  updateMeeting(
-    @Args('updateMeetingInput') updateMeetingInput: UpdateMeetingInput,
-  ) {
-    return this.meetingService.update(
-      updateMeetingInput.id,
-      updateMeetingInput,
-    );
-  }
-
-  @Mutation(() => Meeting)
-  removeMeeting(@Args('id', { type: () => Int }) id: number) {
-    return this.meetingService.remove(id);
-  }
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Mutation(() => Meeting, { name: 'joinMeeting' })
-  joinMeeting(@Args('joinMeetingInput') joinMeetingInput: JoinMeetingInput) {
-    return this.meetingService.joinMeeting(joinMeetingInput, '');
+  async joinMeeting(
+    @Args('input') input: JoinMeetingInput,
+    @CurrentUser() user: User,
+  ): Promise<Meeting> {
+    await this.meetingService.joinMeeting(input, user.id);
+    return {
+      id: '1',
+    };
   }
 }

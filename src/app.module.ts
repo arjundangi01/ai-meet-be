@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
 import { PrismaModule } from './db/db.module';
 import { ConfigModule } from '@nestjs/config';
 import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
@@ -14,6 +13,7 @@ import { RecordingModule } from './recording/recording.module';
 import { MeetingModule } from './meeting/meeting.module';
 import { WebhookModule } from './webhook/webhook.module';
 import { DockerodeModule } from './dockerode/dockerode.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [

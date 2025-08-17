@@ -25,15 +25,6 @@ export interface UpdateRecordingInput {
     id: number;
 }
 
-export interface CreateMeetingInput {
-    exampleField: number;
-}
-
-export interface UpdateMeetingInput {
-    exampleField?: Nullable<number>;
-    id: number;
-}
-
 export interface JoinMeetingInput {
     meetingId: string;
 }
@@ -69,23 +60,19 @@ export interface PaginatedRecordingResponse {
 }
 
 export interface Meeting {
-    exampleField: number;
+    id: number;
 }
 
 export interface IQuery {
     recordings(input: GetRecordingsInput): PaginatedRecordingResponse | Promise<PaginatedRecordingResponse>;
     recording(id: number): Recording | Promise<Recording>;
-    meeting(id: number): Meeting | Promise<Meeting>;
 }
 
 export interface IMutation {
     createRecording(createRecordingInput: CreateRecordingInput): Recording | Promise<Recording>;
     updateRecording(updateRecordingInput: UpdateRecordingInput): Recording | Promise<Recording>;
     removeRecording(id: number): Recording | Promise<Recording>;
-    createMeeting(createMeetingInput: CreateMeetingInput): Meeting | Promise<Meeting>;
-    updateMeeting(updateMeetingInput: UpdateMeetingInput): Meeting | Promise<Meeting>;
-    removeMeeting(id: number): Meeting | Promise<Meeting>;
-    joinMeeting(joinMeetingInput: JoinMeetingInput): Meeting | Promise<Meeting>;
+    joinMeeting(input: JoinMeetingInput): Meeting | Promise<Meeting>;
 }
 
 type Nullable<T> = T | null;
