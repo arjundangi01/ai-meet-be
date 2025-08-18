@@ -1,6 +1,9 @@
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 import { ENV } from '../enums/common';
+import * as fs from 'fs';
+
+const keyFilename = path.join(process.cwd(), 'meeting-byte-b3c982f6501b.json');
 
 if (process.env.NODE_ENV === ENV.TEST) {
   dotenv.config({ path: path.resolve('.', '.env.spec') });
@@ -21,6 +24,7 @@ type ConfigurationType = {
   DOCKER_IMAGE_NAME: string;
   DOCKER_USERNAME: string;
   DOCKER_PASSWORD: string;
+  GCP_KEY_JSON: any;
 };
 
 const config: ConfigurationType = {
@@ -36,6 +40,7 @@ const config: ConfigurationType = {
   DOCKER_IMAGE_NAME: process.env.DOCKER_IMAGE_NAME,
   DOCKER_USERNAME: process.env.DOCKER_USERNAME,
   DOCKER_PASSWORD: process.env.DOCKER_PASSWORD,
+  GCP_KEY_JSON: JSON.parse(fs.readFileSync(keyFilename, 'utf8')),
 };
 
 export default config;

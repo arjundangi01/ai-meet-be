@@ -33,6 +33,10 @@ export class DockerodeService {
     userId: string;
   }) {
     try {
+      const b64 = Buffer.from(JSON.stringify(config.GCP_KEY_JSON)).toString(
+        'base64',
+      );
+
       const docker = new Docker();
       const imageName = config.DOCKER_IMAGE_NAME;
       const authConfig = {
@@ -68,6 +72,7 @@ export class DockerodeService {
           'USER_MEETING_ID=' + input.userMeeting.id,
           'GCP_BUCKET_NAME=' + config.GCP_BUCKET_NAME,
           'GCP_PROJECT_ID=' + config.GCP_PROJECT_ID,
+          'GCP_KEY_B64=' + b64,
         ],
         AttachStdout: true,
         HostConfig: {
