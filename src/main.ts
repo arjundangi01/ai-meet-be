@@ -33,11 +33,12 @@ async function bootstrap() {
   }
 
   // app.useBodyParser('application/json', { bodyLimit: 10 * 1000 * 1024 });
+  const port = process.env.PORT ? Number(process.env.PORT) : 8080;
+  await app.listen({ port, host: '0.0.0.0' });
 
-  await app.listen(8989, '0.0.0.0');
-  console.log(`Server http://localhost:8989/api`);
-  console.log(`Server swagger http://localhost:8989/docs`);
-  console.log(`Server graphql http://localhost:8989/graphql`);
+  console.log(`Server running on port ${port}`);
+  console.log(`Swagger http://localhost:${port}/docs`);
+  console.log(`GraphQL http://localhost:${port}/graphql`);
 }
 bootstrap();
 

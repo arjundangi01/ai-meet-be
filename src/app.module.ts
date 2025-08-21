@@ -20,7 +20,10 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     UsersModule,
     PrismaModule,
-    ConfigModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env'],
+    }),
     GoogleCalendarModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

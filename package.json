@@ -22,7 +22,8 @@
     "prisma:migrate": "npx prisma migrate dev --name init",
     "prisma:studio": "prisma studio",
     "db:reset": "npx prisma migrate reset",
-    "prisma:formate": "npx prisma format"
+    "prisma:formate": "npx prisma format",
+    "gcp-build": "npm run build"
   },
   "dependencies": {
     "@apollo/server": "^4.12.2",
