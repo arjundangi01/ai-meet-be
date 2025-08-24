@@ -22,6 +22,7 @@ export class MeetingResolver {
     @CurrentUser() user: User,
   ): Promise<Meeting> {
     try {
+      console.log('input -->', input);
       await this.meetingService.joinMeeting(input, user.id);
       return {
         id: '1',
