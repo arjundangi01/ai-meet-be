@@ -92,6 +92,7 @@ export class DockerodeService {
       return newContainer;
     } catch (error) {
       console.log('error -->', error);
+      throw error;
     }
   }
 }

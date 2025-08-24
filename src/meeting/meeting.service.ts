@@ -64,7 +64,7 @@ export class MeetingService {
     );
     console.log('userMeeting -->', userMeeting, meeting);
     //  create container
-    const container = this.dockerodeService.createContainer({
+    const container = await this.dockerodeService.createContainer({
       userMeeting,
       userId,
       googleId: meeting.googleId,
