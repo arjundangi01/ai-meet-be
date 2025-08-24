@@ -21,9 +21,13 @@ export class MeetingResolver {
     @Args('input') input: JoinMeetingInput,
     @CurrentUser() user: User,
   ): Promise<Meeting> {
-    await this.meetingService.joinMeeting(input, user.id);
-    return {
-      id: '1',
-    };
+    try {
+      await this.meetingService.joinMeeting(input, user.id);
+      return {
+        id: '1',
+      };
+    } catch (error) {
+      console.log('error -->', error);
+    }
   }
 }
