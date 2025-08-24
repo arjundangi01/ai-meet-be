@@ -9,8 +9,6 @@ if (process.env.NODE_ENV === ENV.TEST) {
 }
 
 type ConfigurationType = {
-  CHATTER_BOX_API_KEY: string;
-  GOOGLE_CALLBACK_URL: string;
   GOOGLE_VERIFY_OAUTH_URL: string;
   JWT_SECRET: string;
   GCP_BUCKET_NAME: string;
@@ -20,11 +18,10 @@ type ConfigurationType = {
   DOCKER_USERNAME: string;
   DOCKER_PASSWORD: string;
   GCP_KEY_JSON: any;
+  SERVER_URL: string;
 };
 
 const config: ConfigurationType = {
-  CHATTER_BOX_API_KEY: process.env.CHATTER_BOX_API_KEY,
-  GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
   GOOGLE_VERIFY_OAUTH_URL: process.env.GOOGLE_VERIFY_OAUTH_URL,
   JWT_SECRET: process.env.JWT_SECRET,
   GCP_BUCKET_NAME: process.env.GCP_BUCKET_NAME,
@@ -33,6 +30,7 @@ const config: ConfigurationType = {
   DOCKER_IMAGE_NAME: process.env.DOCKER_IMAGE_NAME,
   DOCKER_USERNAME: process.env.DOCKER_USERNAME,
   DOCKER_PASSWORD: process.env.DOCKER_PASSWORD,
+  SERVER_URL: process.env.SERVER_URL,
   GCP_KEY_JSON: {
     type: process.env.type,
     project_id: process.env.project_id,

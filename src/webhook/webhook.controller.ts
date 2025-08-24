@@ -10,6 +10,7 @@ import {
 import { WebhookService } from './webhook.service';
 import { CreateWebhookDto } from './dto/create-webhook.dto';
 import { UpdateWebhookDto } from './dto/update-webhook.dto';
+import { MeetingEndedDto } from './dto/meeting-ent.dto';
 
 @Controller('webhook')
 export class WebhookController {
@@ -21,8 +22,8 @@ export class WebhookController {
   }
 
   @Post('bot')
-  bot(@Body() body: any) {
-    console.log(body);
+  bot(@Body() body: MeetingEndedDto) {
+    this.webhookService.handleMeetingEnded(body);
     return {
       message: 'Webhook received',
     };

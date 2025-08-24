@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDockerodeDto } from './dto/create-dockerode.dto';
 import { UpdateDockerodeDto } from './dto/update-dockerode.dto';
-import { UserMeeting } from '@prisma/client';
+import { Prisma, UserMeeting } from '@prisma/client';
 import config from 'src/lib/config/env-config';
 const Docker = require('dockerode');
 
@@ -28,7 +28,11 @@ export class DockerodeService {
   }
 
   async createContainer(input: {
-    userMeeting: Pick<UserMeeting, 'id' | 'meetingId'>;
+    userMeeting: Prisma.UserMeetingGetPayload<{
+      include: {
+        user: true;
+      };
+    }>;
     googleId: string;
     userId: string;
   }) {
@@ -73,6 +77,9 @@ export class DockerodeService {
           'GCP_BUCKET_NAME=' + config.GCP_BUCKET_NAME,
           'GCP_PROJECT_ID=' + config.GCP_PROJECT_ID,
           'GCP_KEY_B64=' + b64,
+          'USER_NAME=' + input.userMeeting.user.name,
+          'PORT=' + 3001,
+          'SERVER_URL=' + config.SERVER_URL,
         ],
         AttachStdout: true,
         HostConfig: {

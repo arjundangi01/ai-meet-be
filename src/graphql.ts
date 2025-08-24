@@ -29,6 +29,17 @@ export interface JoinMeetingInput {
     meetingId: string;
 }
 
+export interface User {
+    id: string;
+    email: string;
+    name: string;
+    role: string;
+    firebaseUid: string;
+    oauth: string;
+    accessToken: string;
+    idToken: string;
+}
+
 export interface Recording {
     id: string;
     fileUrl?: Nullable<string>;
@@ -64,6 +75,7 @@ export interface Meeting {
 }
 
 export interface IQuery {
+    me(): User | Promise<User>;
     recordings(input: GetRecordingsInput): PaginatedRecordingResponse | Promise<PaginatedRecordingResponse>;
     recording(id: number): Recording | Promise<Recording>;
 }

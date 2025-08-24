@@ -2,6 +2,32 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type User {
+  """User id"""
+  id: String!
+
+  """User email"""
+  email: String!
+
+  """User name"""
+  name: String!
+
+  """User role"""
+  role: String!
+
+  """User firebaseUid"""
+  firebaseUid: String!
+
+  """User oauth"""
+  oauth: String!
+
+  """User accessToken"""
+  accessToken: String!
+
+  """User idToken"""
+  idToken: String!
+}
+
 type Recording {
   id: String!
   fileUrl: String
@@ -38,6 +64,7 @@ type Meeting {
 }
 
 type Query {
+  me: User!
   recordings(input: GetRecordingsInput!): PaginatedRecordingResponse!
   recording(id: Int!): Recording!
 }

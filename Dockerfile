@@ -1,6 +1,8 @@
 # Step 1: Build stage
 FROM node:18 AS builder
-WORKDIR /app
+
+# Create app directory
+WORKDIR /usr/src/app
 
 # Install dependencies
 COPY package*.json ./
@@ -18,20 +20,19 @@ RUN npm run build
 
 # Step 2: Production stage
 FROM node:18
-WORKDIR /app
+
+# Create app directory
+WORKDIR /usr/src/app
 
 # Copy only package.json for prod deps
 COPY package*.json ./
 RUN npm ci --omit=dev
 
 # Copy dist + prisma + generated client
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /usr/src/app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /usr/src/app/prisma ./prisma
 
 # Start app
-
-
-# Start the server
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main.js"]

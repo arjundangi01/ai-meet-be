@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateWebhookDto } from './dto/create-webhook.dto';
 import { UpdateWebhookDto } from './dto/update-webhook.dto';
-
+import { MeetingEndedDto } from './dto/meeting-ent.dto';
+import { PrismaService } from 'src/db/db.service';
+const Docker = require('dockerode');
 @Injectable()
 export class WebhookService {
+  constructor(private readonly prisma: PrismaService) {}
   create(createWebhookDto: CreateWebhookDto) {
     return 'This action adds a new webhook';
   }
@@ -22,5 +25,33 @@ export class WebhookService {
 
   remove(id: number) {
     return `This action removes a #${id} webhook`;
+  }
+
+  async handleMeetingEnded(body: MeetingEndedDto) {
+    const docker = new Docker();
+
+    const container = docker.getContainer(body.containerId);
+
+    // Stop the container (ignore error if already stopped)
+    await container.stop().catch((err) => {
+      if (err.statusCode === 304) {
+        console.log(`Container ${body.containerId} already stopped.`);
+      } else {
+        throw err;
+      }
+    });
+
+    // Remove the container
+    await container.remove({ force: true });
+    console.log(`Container ${body.containerId} stopped and removed.`);
+
+    //  update user meeting
+    await this.prisma.userMeeting.update({
+      where: { id: body.userMeetingId },
+      data: {
+        transcript: body.transcript,
+        fileUrl: body.fileUrl,
+      },
+    });
   }
 }

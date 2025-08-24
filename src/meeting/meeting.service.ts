@@ -52,6 +52,9 @@ export class MeetingService {
             userId,
             meetingId: meeting.id,
           },
+          include: {
+            user: true,
+          },
         });
         return {
           userMeeting,
@@ -66,6 +69,8 @@ export class MeetingService {
       userId,
       googleId: meeting.googleId,
     });
+
+    console.log('container -->', container);
 
     return userMeeting;
   }

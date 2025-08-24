@@ -14,30 +14,9 @@ export class RecordingService {
   }
 
   async findAll(input: GetRecordingsInput) {
-    const { cursorOptions, orderByOptions, shouldPaginate, take } =
-      constructServicePaginationOptions<
-        Prisma.RecordingWhereUniqueInput,
-        Prisma.RecordingOrderByWithRelationInput
-      >({
-        after: input.after,
-        before: input.before,
-        limit: input.first || input.last,
-      });
-
-    const [recordings, total] = await Promise.all([
-      this.prisma.recording.findMany({
-        ...(shouldPaginate && {
-          take,
-          cursor: cursorOptions,
-          skip: cursorOptions ? 1 : undefined,
-        }),
-        orderBy: orderByOptions,
-      }),
-      this.prisma.recording.count({}),
-    ]);
     return {
-      recordings,
-      total,
+      recordings: [],
+      total: 0,
     };
   }
 
