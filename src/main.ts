@@ -18,7 +18,11 @@ async function bootstrap() {
       bodyParser: true,
     },
   );
-  await app.enableCors();
+  app.enableCors({
+    origin: ['http://localhost:3000', 'https://replay-ai-gray.vercel.app'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+  });
   await app.register(multiPart as any);
 
   if (envConfig.NODE_ENV === ENV.DEVELOPMENT) {
