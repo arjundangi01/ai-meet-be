@@ -28,14 +28,22 @@ export class WebhookService {
   }
 
   async handleMeetingEnded(body: MeetingEndedDto) {
+    const userMeeting = await this.prisma.userMeeting.findUnique({
+      where: { id: body.userMeetingId },
+    });
+
+    if (!userMeeting) {
+      console.log('User meeting not found');
+      return;
+    }
     const docker = new Docker();
 
-    const container = docker.getContainer(body.containerId);
+    const container = docker.getContainer(userMeeting.containerId);
 
     // Stop the container (ignore error if already stopped)
     await container.stop().catch((err) => {
       if (err.statusCode === 304) {
-        console.log(`Container ${body.containerId} already stopped.`);
+        console.log(`Container ${userMeeting.containerId} already stopped.`);
       } else {
         throw err;
       }
@@ -43,7 +51,7 @@ export class WebhookService {
 
     // Remove the container
     await container.remove({ force: true });
-    console.log(`Container ${body.containerId} stopped and removed.`);
+    console.log(`Container ${userMeeting.containerId} stopped and removed.`);
 
     //  update user meeting
     await this.prisma.userMeeting.update({
@@ -53,5 +61,6 @@ export class WebhookService {
         fileUrl: body.fileUrl,
       },
     });
+    console.log('User meeting updated');
   }
 }

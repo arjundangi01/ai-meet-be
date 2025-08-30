@@ -70,7 +70,12 @@ export class MeetingService {
       googleId: meeting.googleId,
     });
 
-    console.log('container -->', container);
+    await this.prisma.userMeeting.update({
+      where: { id: userMeeting.id },
+      data: { containerId: container.id },
+    });
+
+    console.log('container -->', container?.id);
 
     return userMeeting;
   }
