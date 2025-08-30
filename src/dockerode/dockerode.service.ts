@@ -48,24 +48,33 @@ export class DockerodeService {
         password: config.DOCKER_PASSWORD,
       };
 
-      await new Promise((resolve, reject) => {
-        docker.pull(imageName, { authconfig: authConfig }, (err, stream) => {
-          if (err) return reject(err);
+      let imageExists = true;
+      try {
+        await docker.getImage(imageName).inspect();
+      } catch (err) {
+        imageExists = false;
+      }
 
-          docker.modem.followProgress(stream, onFinished, onProgress);
-
-          function onFinished(err, output) {
+      if (!imageExists) {
+        await new Promise((resolve, reject) => {
+          docker.pull(imageName, { authconfig: authConfig }, (err, stream) => {
             if (err) return reject(err);
-            resolve(output);
-          }
 
-          function onProgress(event) {
-            if (event.status) {
-              console.log(event.status, event.progress || '');
+            docker.modem.followProgress(stream, onFinished, onProgress);
+
+            function onFinished(err, output) {
+              if (err) return reject(err);
+              resolve(output);
             }
-          }
+
+            function onProgress(event) {
+              if (event.status) {
+                console.log(event.status, event.progress || '');
+              }
+            }
+          });
         });
-      });
+      }
 
       const newContainer = await docker.createContainer({
         Image: imageName,
