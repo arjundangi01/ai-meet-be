@@ -16,6 +16,14 @@ export interface GetRecordingsInput {
     meetingId?: Nullable<string>;
 }
 
+export interface GetUserMeetingsInput {
+    first?: Nullable<number>;
+    after?: Nullable<string>;
+    before?: Nullable<number>;
+    last?: Nullable<number>;
+    meetingId?: Nullable<string>;
+}
+
 export interface CreateRecordingInput {
     exampleField: number;
 }
@@ -74,10 +82,37 @@ export interface Meeting {
     id: number;
 }
 
+export interface UserMeeting {
+    id: string;
+    userId: string;
+    meetingId: string;
+    fileUrl?: Nullable<string>;
+    transcript?: Nullable<string>;
+    summary?: Nullable<string>;
+    containerId?: Nullable<string>;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface UserMeetingEdge {
+    cursor: string;
+    node: UserMeeting;
+}
+
+export interface PaginatedUserMeetingResponse {
+    edges: UserMeetingEdge[];
+    pageInfo: PageInfo;
+    totalCount: number;
+    pageSize: number;
+    totalPage: number;
+}
+
 export interface IQuery {
     me(): User | Promise<User>;
     recordings(input: GetRecordingsInput): PaginatedRecordingResponse | Promise<PaginatedRecordingResponse>;
     recording(id: number): Recording | Promise<Recording>;
+    userMeetings(input: GetUserMeetingsInput): PaginatedUserMeetingResponse | Promise<PaginatedUserMeetingResponse>;
+    userMeeting(id: string): UserMeeting | Promise<UserMeeting>;
 }
 
 export interface IMutation {

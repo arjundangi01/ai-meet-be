@@ -14,6 +14,7 @@ import { MeetingModule } from './meeting/meeting.module';
 import { WebhookModule } from './webhook/webhook.module';
 import { DockerodeModule } from './dockerode/dockerode.module';
 import { UsersModule } from './users/users.module';
+import { UserMeetingModule } from './user-meeting/user-meeting.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { UsersModule } from './users/users.module';
     MeetingModule,
     WebhookModule,
     DockerodeModule,
+    UserMeetingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

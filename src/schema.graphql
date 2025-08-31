@@ -63,13 +63,48 @@ type Meeting {
   id: Int!
 }
 
+type UserMeeting {
+  id: String!
+  userId: String!
+  meetingId: String!
+  fileUrl: String
+  transcript: String
+  summary: String
+  containerId: String
+  createdAt: String!
+  updatedAt: String!
+}
+
+type UserMeetingEdge {
+  cursor: String!
+  node: UserMeeting!
+}
+
+type PaginatedUserMeetingResponse {
+  edges: [UserMeetingEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+  pageSize: Int!
+  totalPage: Int!
+}
+
 type Query {
   me: User!
   recordings(input: GetRecordingsInput!): PaginatedRecordingResponse!
   recording(id: Int!): Recording!
+  userMeetings(input: GetUserMeetingsInput!): PaginatedUserMeetingResponse!
+  userMeeting(id: String!): UserMeeting!
 }
 
 input GetRecordingsInput {
+  first: Int
+  after: String
+  before: Float
+  last: Int
+  meetingId: String
+}
+
+input GetUserMeetingsInput {
   first: Int
   after: String
   before: Float

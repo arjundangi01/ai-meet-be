@@ -11,25 +11,6 @@ export class MeetingService {
     private readonly prisma: PrismaService,
     private readonly dockerodeService: DockerodeService,
   ) {}
-  create(createMeetingInput: CreateMeetingInput) {
-    return 'This action adds a new meeting';
-  }
-
-  findAll() {
-    return `This action returns all meeting`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} meeting`;
-  }
-
-  update(id: number, updateMeetingInput: UpdateMeetingInput) {
-    return `This action updates a #${id} meeting`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} meeting`;
-  }
 
   async joinMeeting(joinMeetingInput: JoinMeetingInput, userId: string) {
     const { userMeeting, meeting } = await this.prisma.$transaction(
