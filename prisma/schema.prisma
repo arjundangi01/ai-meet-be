@@ -12,6 +12,12 @@ enum USER_ROLE {
   USER
 }
 
+enum USER_MEETING_STATUS {
+  CREATED
+  JOINED
+  ENDED
+}
+
 model User {
   id          String        @id @default(uuid())
   email       String        @unique
@@ -36,15 +42,16 @@ model Meeting {
 }
 
 model UserMeeting {
-  id          String   @id @default(uuid())
+  id          String              @id @default(uuid())
   userId      String
   meetingId   String
-  meeting     Meeting  @relation(fields: [meetingId], references: [id])
-  user        User     @relation(fields: [userId], references: [id])
+  status      USER_MEETING_STATUS @default(CREATED)
+  meeting     Meeting             @relation(fields: [meetingId], references: [id])
+  user        User                @relation(fields: [userId], references: [id])
   fileUrl     String?
   transcript  Json?
   summary     String?
   containerId String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
 }

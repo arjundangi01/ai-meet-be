@@ -3,6 +3,7 @@ import { CreateWebhookDto } from './dto/create-webhook.dto';
 import { UpdateWebhookDto } from './dto/update-webhook.dto';
 import { MeetingEndedDto } from './dto/meeting-ent.dto';
 import { PrismaService } from 'src/db/db.service';
+import { USER_MEETING_STATUS } from '@prisma/client';
 const Docker = require('dockerode');
 @Injectable()
 export class WebhookService {
@@ -59,6 +60,7 @@ export class WebhookService {
       data: {
         transcript: body.transcript,
         fileUrl: body.fileUrl,
+        status: USER_MEETING_STATUS.ENDED,
       },
     });
     console.log('User meeting updated');

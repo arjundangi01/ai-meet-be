@@ -4,6 +4,7 @@ import { UpdateMeetingInput } from './dto/update-meeting.input';
 import { JoinMeetingInput } from './dto/join-meeting.input';
 import { PrismaService } from 'src/db/db.service';
 import { DockerodeService } from 'src/dockerode/dockerode.service';
+import { USER_MEETING_STATUS } from '@prisma/client';
 
 @Injectable()
 export class MeetingService {
@@ -43,7 +44,6 @@ export class MeetingService {
         };
       },
     );
-    console.log('userMeeting -->', userMeeting, meeting);
     //  create container
     const container = await this.dockerodeService.createContainer({
       userMeeting,
@@ -53,10 +53,8 @@ export class MeetingService {
 
     await this.prisma.userMeeting.update({
       where: { id: userMeeting.id },
-      data: { containerId: container.id },
+      data: { containerId: container.id, status: USER_MEETING_STATUS.JOINED },
     });
-
-    console.log('container -->', container?.id);
 
     return userMeeting;
   }

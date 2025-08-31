@@ -68,9 +68,9 @@ export class DockerodeService {
             }
 
             function onProgress(event) {
-              if (event.status) {
-                console.log(event.status, event.progress || '');
-              }
+              // if (event.status) {
+              //   console.log(event.status, event.progress || '');
+              // }
             }
           });
         });
@@ -100,7 +100,7 @@ export class DockerodeService {
       await newContainer.start();
       return newContainer;
     } catch (error) {
-      console.log('error -->', error);
+      console.log('error in createContainer -->', error);
       throw error;
     }
   }
