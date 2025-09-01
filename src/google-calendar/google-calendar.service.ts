@@ -40,7 +40,7 @@ export class GoogleCalendarService {
       calendarId: 'primary',
       maxResults: 10,
     });
-    console.log('res -->', res.data.items.length);
+
     return res.data.items;
   }
 
@@ -72,7 +72,6 @@ export class GoogleCalendarService {
     const res = await meet.spaces.get({
       name: `spaces/${meetingCode}`,
     });
-    console.log('res -->', res.data);
     return res.data;
   }
 }
