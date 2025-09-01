@@ -53,6 +53,14 @@ export class AuthService {
   }
 
   async betaSignup(input: BetaRequestDto) {
+    const existingBetaUser = await this.prisma.betaUser.findFirst({
+      where: {
+        email: input.email,
+      },
+    });
+    if (existingBetaUser) {
+      return;
+    }
     const betaUser = await this.prisma.betaUser.create({
       data: input,
     });
