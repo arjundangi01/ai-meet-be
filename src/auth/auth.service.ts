@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { SocialLoginDto } from './dto/create-auth.dto';
+import { BetaRequestDto, SocialLoginDto } from './dto/create-auth.dto';
 import { AuthHelper } from './helper';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/db/db.service';
@@ -50,5 +50,12 @@ export class AuthService {
       accessToken: this.jwtService.sign({ userId: user.id }),
       user: user,
     };
+  }
+
+  async betaSignup(input: BetaRequestDto) {
+    const betaUser = await this.prisma.betaUser.create({
+      data: input,
+    });
+    return betaUser;
   }
 }

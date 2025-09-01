@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { SocialLoginDto } from './dto/create-auth.dto';
+import { BetaRequestDto, SocialLoginDto } from './dto/create-auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -23,5 +23,10 @@ export class AuthController {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  @Post('beta-request')
+  async betaRequest(@Body() betaRequestDto: BetaRequestDto) {
+    return this.authService.betaSignup(betaRequestDto);
   }
 }

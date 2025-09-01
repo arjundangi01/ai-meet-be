@@ -44,3 +44,9 @@ export class SocialLoginDto {
   })
   oauthProvider: OAUTH_PROVIDER;
 }
+
+export class BetaRequestDto {
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+}
