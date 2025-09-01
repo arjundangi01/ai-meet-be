@@ -23,10 +23,16 @@ export class WebhookController {
 
   @Post('bot')
   bot(@Body() body: MeetingEndedDto) {
-    this.webhookService.handleMeetingEnded(body);
-    return {
-      message: 'Webhook received',
-    };
+    try {
+      this.webhookService.handleMeetingEnded(body);
+      return {
+        message: 'Webhook received',
+      };
+    } catch (error) {
+      return {
+        message: 'Webhook received With Error',
+      };
+    }
   }
 
   @Get()

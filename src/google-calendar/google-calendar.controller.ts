@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { GoogleCalendarService } from './google-calendar.service';
 import { CreateGoogleCalendarDto } from './dto/create-google-calendar.dto';
 import { UpdateGoogleCalendarDto } from './dto/update-google-calendar.dto';
@@ -12,18 +20,11 @@ export class GoogleCalendarController {
     return this.googleCalendarService.create(createGoogleCalendarDto);
   }
 
-  @Get()
-  findAll() {
-    return this.googleCalendarService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.googleCalendarService.findOne(+id);
-  }
-
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGoogleCalendarDto: UpdateGoogleCalendarDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateGoogleCalendarDto: UpdateGoogleCalendarDto,
+  ) {
     return this.googleCalendarService.update(+id, updateGoogleCalendarDto);
   }
 

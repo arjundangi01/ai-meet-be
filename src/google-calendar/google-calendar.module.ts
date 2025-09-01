@@ -7,5 +7,6 @@ import { PrismaModule } from 'src/db/db.module';
   controllers: [GoogleCalendarController],
   providers: [GoogleCalendarService],
   imports: [PrismaModule],
+  exports: [GoogleCalendarService],
 })
 export class GoogleCalendarModule {}

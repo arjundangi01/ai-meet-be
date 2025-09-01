@@ -3,6 +3,7 @@ import { CreateDockerodeDto } from './dto/create-dockerode.dto';
 import { UpdateDockerodeDto } from './dto/update-dockerode.dto';
 import { Prisma, UserMeeting } from '@prisma/client';
 import config from 'src/lib/config/env-config';
+import { PrismaService } from 'src/db/db.service';
 const Docker = require('dockerode');
 
 @Injectable()
@@ -35,6 +36,7 @@ export class DockerodeService {
     }>;
     googleId: string;
     userId: string;
+    port: number;
   }) {
     try {
       const b64 = Buffer.from(JSON.stringify(config.GCP_KEY_JSON)).toString(
@@ -87,7 +89,7 @@ export class DockerodeService {
           'GCP_PROJECT_ID=' + config.GCP_PROJECT_ID,
           'GCP_KEY_B64=' + b64,
           'USER_NAME=' + input.userMeeting.user.name,
-          'PORT=' + 3001,
+          'PORT=' + input.port,
           'SERVER_URL=' + config.SERVER_URL,
         ],
         AttachStdout: true,

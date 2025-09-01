@@ -19,6 +19,7 @@ type ConfigurationType = {
   DOCKER_PASSWORD: string;
   GCP_KEY_JSON: any;
   SERVER_URL: string;
+  GEMINI_API_KEY: string;
 };
 
 const config: ConfigurationType = {
@@ -31,6 +32,7 @@ const config: ConfigurationType = {
   DOCKER_USERNAME: process.env.DOCKER_USERNAME,
   DOCKER_PASSWORD: process.env.DOCKER_PASSWORD,
   SERVER_URL: process.env.SERVER_URL,
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
   GCP_KEY_JSON: {
     type: process.env.type,
     project_id: process.env.project_id,

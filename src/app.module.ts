@@ -15,6 +15,10 @@ import { WebhookModule } from './webhook/webhook.module';
 import { DockerodeModule } from './dockerode/dockerode.module';
 import { UsersModule } from './users/users.module';
 import { UserMeetingModule } from './user-meeting/user-meeting.module';
+import { GeminiModule } from './gemini/gemini.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { GqlThrottlerGuard } from './lib/common/guard/throttler-guard';
 
 @Module({
   imports: [
@@ -34,7 +38,7 @@ import { UserMeetingModule } from './user-meeting/user-meeting.module';
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       // typePaths: ['./**/*.graphql'],
       autoSchemaFile: join(process.cwd(), 'src/schema.graphql'),
-      context: ({ req }) => ({ req }),
+      context: (req, res) => ({ req, res }),
       definitions: {
         path: join(process.cwd(), 'src/graphql.ts'),
       },
@@ -44,8 +48,23 @@ import { UserMeetingModule } from './user-meeting/user-meeting.module';
     WebhookModule,
     DockerodeModule,
     UserMeetingModule,
+    GeminiModule,
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 10,
+        },
+      ],
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: GqlThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

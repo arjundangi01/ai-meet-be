@@ -5,15 +5,30 @@ import { JoinMeetingInput } from './dto/join-meeting.input';
 import { PrismaService } from 'src/db/db.service';
 import { DockerodeService } from 'src/dockerode/dockerode.service';
 import { USER_MEETING_STATUS } from '@prisma/client';
+import { GoogleCalendarService } from 'src/google-calendar/google-calendar.service';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class MeetingService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly dockerodeService: DockerodeService,
+    private readonly googleCalendarService: GoogleCalendarService,
   ) {}
 
-  async joinMeeting(joinMeetingInput: JoinMeetingInput, userId: string) {
+  async joinMeeting(joinMeetingInput: JoinMeetingInput, user: User) {
+    const dbContainer = await this.prisma.containerPort.findFirst({
+      where: {
+        userMeetingId: { not: null },
+      },
+      orderBy: {
+        port: 'asc',
+      },
+    });
+    if (!dbContainer) {
+      throw new Error('No available slot');
+    }
+
     const { userMeeting, meeting } = await this.prisma.$transaction(
       async (tx) => {
         let meeting = await tx.meeting.findUnique({
@@ -31,7 +46,7 @@ export class MeetingService {
         }
         const userMeeting = await tx.userMeeting.create({
           data: {
-            userId,
+            userId: user.id,
             meetingId: meeting.id,
           },
           include: {
@@ -47,14 +62,21 @@ export class MeetingService {
     //  create container
     const container = await this.dockerodeService.createContainer({
       userMeeting,
-      userId,
+      userId: user.id,
       googleId: meeting.googleId,
+      port: dbContainer.port,
     });
 
-    await this.prisma.userMeeting.update({
-      where: { id: userMeeting.id },
-      data: { containerId: container.id, status: USER_MEETING_STATUS.JOINED },
-    });
+    await Promise.all([
+      this.prisma.userMeeting.update({
+        where: { id: userMeeting.id },
+        data: { containerId: container.id, status: USER_MEETING_STATUS.JOINED },
+      }),
+      this.prisma.containerPort.update({
+        where: { id: dbContainer.id },
+        data: { userMeetingId: userMeeting.id },
+      }),
+    ]);
 
     return userMeeting;
   }

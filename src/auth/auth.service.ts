@@ -39,6 +39,11 @@ export class AuthService {
         accessToken: input.accessToken,
         idToken: input.idToken,
       });
+    } else {
+      user = await this.usersService.update(user.id, {
+        accessToken: input.accessToken,
+        idToken: input.idToken,
+      });
     }
 
     return {

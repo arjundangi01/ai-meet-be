@@ -42,16 +42,26 @@ model Meeting {
 }
 
 model UserMeeting {
-  id          String              @id @default(uuid())
-  userId      String
-  meetingId   String
-  status      USER_MEETING_STATUS @default(CREATED)
-  meeting     Meeting             @relation(fields: [meetingId], references: [id])
-  user        User                @relation(fields: [userId], references: [id])
-  fileUrl     String?
-  transcript  Json?
-  summary     String?
-  containerId String?
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
+  id            String              @id @default(uuid())
+  userId        String
+  meetingId     String
+  status        USER_MEETING_STATUS @default(CREATED)
+  meeting       Meeting             @relation(fields: [meetingId], references: [id])
+  user          User                @relation(fields: [userId], references: [id])
+  fileUrl       String?
+  transcript    Json?
+  summary       String?
+  containerId   String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  ContainerPort ContainerPort[]
+}
+
+model ContainerPort {
+  id            String       @id @default(uuid())
+  port          Int
+  userMeetingId String?
+  userMeeting   UserMeeting? @relation(fields: [userMeetingId], references: [id])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }

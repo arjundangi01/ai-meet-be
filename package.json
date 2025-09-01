@@ -23,7 +23,8 @@
     "prisma:studio": "prisma studio",
     "db:reset": "npx prisma migrate reset",
     "prisma:formate": "npx prisma format",
-    "gcp-build": "npm run build"
+    "gcp-build": "npm run build",
+    "db:seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.12.2",
@@ -31,6 +32,8 @@
     "@chatterboxio/bot": "^1.2.0",
     "@fastify/multipart": "^9.0.3",
     "@fastify/static": "^8.2.0",
+    "@google-apps/meet": "^0.7.0",
+    "@google/genai": "^1.16.0",
     "@nestjs/apollo": "^13.1.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
@@ -42,6 +45,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/platform-fastify": "^11.1.5",
     "@nestjs/swagger": "^11.2.0",
+    "@nestjs/throttler": "^6.4.0",
     "@prisma/client": "^6.12.0",
     "arctic": "^3.7.0",
     "axios": "^1.11.0",
