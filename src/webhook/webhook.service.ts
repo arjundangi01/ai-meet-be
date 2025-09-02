@@ -82,7 +82,7 @@ export class WebhookService {
         transcript: body.transcript,
         fileUrl: body.fileUrl,
         status: USER_MEETING_STATUS.ENDED,
-        summary: summary ?? '',
+        summary: JSON.stringify(summary) ?? '',
       },
     });
 
