@@ -19,7 +19,7 @@ export class MeetingService {
   async joinMeeting(joinMeetingInput: JoinMeetingInput, user: User) {
     const dbContainer = await this.prisma.containerPort.findFirst({
       where: {
-        userMeetingId: { not: null },
+        userMeetingId: null,
       },
       orderBy: {
         port: 'asc',
