@@ -40,6 +40,7 @@ Your job is to produce a **structured summary**.
       contents: [createUserContent(prompt)],
     });
 
-    return response.candidates[0].content.parts?.join('\n');
+    // console.log(response.candidates[0].content.parts[0].text);
+    return response.candidates[0].content.parts[0]?.text || '';
   }
 }
