@@ -16,7 +16,8 @@ export class GeminiService {
   private readonly geminiModalName = 'gemini-2.5-pro';
 
   async generateSummary(transcript: string) {
-    const prompt = `
+    try {
+      const prompt = `
       You are a professional meeting summarizer AI.
 
 You will be given a raw transcript of a meeting.  
@@ -35,12 +36,15 @@ Your job is to produce a **structured summary**.
         Now summarize the following transcript:
       ${transcript}
     `;
-    const response = await this.gemini.models.generateContent({
-      model: this.geminiModalName,
-      contents: [createUserContent(prompt)],
-    });
+      const response = await this.gemini.models.generateContent({
+        model: this.geminiModalName,
+        contents: [createUserContent(prompt)],
+      });
 
-    // console.log(response.candidates[0].content.parts[0].text);
-    return response.candidates[0].content.parts[0]?.text || '';
+      // console.log(response.candidates[0].content.parts[0].text);
+      return response.candidates[0].content.parts[0]?.text || '';
+    } catch (error) {
+      return '';
+    }
   }
 }

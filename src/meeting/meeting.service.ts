@@ -28,6 +28,7 @@ export class MeetingService {
     if (!dbContainer) {
       throw new Error('No available slot');
     }
+    console.log('found db container -->');
 
     const { userMeeting, meeting } = await this.prisma.$transaction(
       async (tx) => {
@@ -59,6 +60,7 @@ export class MeetingService {
         };
       },
     );
+    console.log(' user meeting created-->');
     //  create container
     const container = await this.dockerodeService.createContainer({
       userMeeting,

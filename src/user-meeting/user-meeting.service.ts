@@ -26,7 +26,6 @@ export class UserMeetingService {
       });
     const where: Prisma.UserMeetingWhereInput = {
       userId,
-      fileUrl: { not: null },
     };
 
     const [userMeetings, total] = await Promise.all([

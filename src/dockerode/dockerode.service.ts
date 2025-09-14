@@ -4,6 +4,7 @@ import { UpdateDockerodeDto } from './dto/update-dockerode.dto';
 import { Prisma, UserMeeting } from '@prisma/client';
 import config from 'src/lib/config/env-config';
 import { PrismaService } from 'src/db/db.service';
+import { ENV } from 'src/lib/enums/common';
 const Docker = require('dockerode');
 
 @Injectable()
@@ -56,6 +57,7 @@ export class DockerodeService {
       } catch (err) {
         imageExists = false;
       }
+      console.log('imageExists -->', imageExists);
 
       if (!imageExists) {
         await new Promise((resolve, reject) => {
@@ -70,9 +72,9 @@ export class DockerodeService {
             }
 
             function onProgress(event) {
-              // if (event.status) {
-              //   console.log(event.status, event.progress || '');
-              // }
+              if (event.status) {
+                console.log(event.status, event.progress || '');
+              }
             }
           });
         });
@@ -91,6 +93,7 @@ export class DockerodeService {
           'USER_NAME=' + input.userMeeting.user.name,
           'PORT=' + input.port,
           'SERVER_URL=' + config.SERVER_URL,
+          'NODE_ENV=' + ENV.PRODUCTION,
         ],
         AttachStdout: true,
         HostConfig: {

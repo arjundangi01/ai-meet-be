@@ -79,8 +79,8 @@ export class WebhookService {
     await this.prisma.userMeeting.update({
       where: { id: body.userMeetingId },
       data: {
-        transcript: JSON.stringify(body.transcript),
-        fileUrl: body.fileUrl,
+        transcript: body.transcript ? JSON.stringify(body.transcript) : null,
+        fileUrl: body.fileUrl ? body.fileUrl : null,
         status: USER_MEETING_STATUS.ENDED,
         summary: summary ?? '',
       },
