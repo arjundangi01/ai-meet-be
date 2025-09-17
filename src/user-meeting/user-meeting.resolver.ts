@@ -59,16 +59,16 @@ export class UserMeetingResolver {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth()
   @Query(() => UserMeeting, { name: 'userMeeting' })
   async findOne(
     @Args('id', { type: () => String }) id: string,
-    @CurrentUser() user: User,
+    // @CurrentUser() user: User,
   ) {
     try {
-      const userId = user.id;
-      return this.userMeetingService.findOne(id, userId);
+      // const userId = user.id;
+      return this.userMeetingService.findOne(id);
     } catch (error) {
       console.log('error -->', error);
     }

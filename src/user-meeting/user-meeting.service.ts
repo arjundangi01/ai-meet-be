@@ -47,10 +47,10 @@ export class UserMeetingService {
     };
   }
 
-  async findOne(id: string, userId: string) {
+  async findOne(id: string, userId?: string) {
     const where: Prisma.UserMeetingWhereInput = {
       id: id,
-      userId,
+      ...(userId && { userId }),
     };
 
     const userMeeting = await this.prisma.userMeeting.findFirst({
