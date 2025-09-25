@@ -71,9 +71,15 @@ type UserMeeting {
   transcript: String
   summary: String
   containerId: String
-  createdAt: String!
-  updatedAt: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  participants: String
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type UserMeetingEdge {
   cursor: String!

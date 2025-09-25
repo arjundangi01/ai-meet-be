@@ -83,6 +83,7 @@ export class WebhookService {
         fileUrl: body.fileUrl ? body.fileUrl : null,
         status: USER_MEETING_STATUS.ENDED,
         summary: summary ?? '',
+        participants: JSON.stringify(body.participantNames),
       },
     });
 

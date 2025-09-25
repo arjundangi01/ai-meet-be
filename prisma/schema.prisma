@@ -52,6 +52,7 @@ model UserMeeting {
   transcript    Json?
   summary       String?
   containerId   String?
+  participants  Json? // array of user names
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
   ContainerPort ContainerPort[]

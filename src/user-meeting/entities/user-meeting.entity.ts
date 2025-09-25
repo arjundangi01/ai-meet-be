@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, DateScalarMode } from '@nestjs/graphql';
 
 @ObjectType()
 export class UserMeeting {
@@ -23,9 +23,12 @@ export class UserMeeting {
   @Field(() => String, { nullable: true })
   containerId?: string;
 
-  @Field(() => String)
+  @Field(() => Date)
   createdAt: Date;
 
-  @Field(() => String)
+  @Field(() => Date)
   updatedAt: Date;
+
+  @Field(() => String, { nullable: true })
+  participants: string;
 }

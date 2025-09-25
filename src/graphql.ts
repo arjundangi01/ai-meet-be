@@ -90,8 +90,9 @@ export interface UserMeeting {
     transcript?: Nullable<string>;
     summary?: Nullable<string>;
     containerId?: Nullable<string>;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    participants?: Nullable<string>;
 }
 
 export interface UserMeetingEdge {
@@ -122,4 +123,5 @@ export interface IMutation {
     joinMeeting(input: JoinMeetingInput): Meeting | Promise<Meeting>;
 }
 
+export type DateTime = any;
 type Nullable<T> = T | null;
