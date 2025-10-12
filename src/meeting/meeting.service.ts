@@ -80,6 +80,18 @@ export class MeetingService {
       }),
     ]);
 
-    return userMeeting;
+    return {
+      meeting,
+      userMeeting,
+    };
+  }
+
+  async findOne(id: string) {
+    if (!id) {
+      return null;
+    }
+    return this.prisma.meeting.findUnique({
+      where: { id },
+    });
   }
 }

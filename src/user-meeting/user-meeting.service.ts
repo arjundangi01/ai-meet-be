@@ -3,7 +3,7 @@ import { CreateUserMeetingInput } from './dto/create-user-meeting.input';
 import { UpdateUserMeetingInput } from './dto/update-user-meeting.input';
 import { GetUserMeetingsInput } from './dto/get-user-meeting.input';
 import { constructServicePaginationOptions } from 'src/lib/utils/serviceUtils/paginationOptions';
-import { Prisma } from '@prisma/client';
+import { Prisma, USER_MEETING_STATUS } from '@prisma/client';
 import { PrismaService } from 'src/db/db.service';
 
 @Injectable()
@@ -26,6 +26,17 @@ export class UserMeetingService {
       });
     const where: Prisma.UserMeetingWhereInput = {
       userId,
+      OR: [
+        {
+          status: USER_MEETING_STATUS.ENDED,
+          fileUrl: {
+            not: null,
+          },
+        },
+        {
+          status: USER_MEETING_STATUS.JOINED,
+        },
+      ],
     };
 
     const [userMeetings, total] = await Promise.all([

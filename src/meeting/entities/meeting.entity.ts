@@ -2,6 +2,18 @@ import { ObjectType, Field, Int } from '@nestjs/graphql';
 
 @ObjectType()
 export class Meeting {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
+  @Field(() => String, { description: 'Example field (placeholder)' })
   id: string;
+
+  @Field(() => String, { nullable: true })
+  name: string;
+
+  @Field(() => String, { nullable: true })
+  googleId: string;
+
+  @Field(() => Date)
+  createdAt: Date;
+
+  @Field(() => Date)
+  updatedAt: Date;
 }

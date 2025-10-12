@@ -1,4 +1,5 @@
 import { ObjectType, Field, Int, DateScalarMode } from '@nestjs/graphql';
+import { Meeting } from 'src/meeting/entities/meeting.entity';
 
 @ObjectType()
 export class UserMeeting {
@@ -31,4 +32,7 @@ export class UserMeeting {
 
   @Field(() => String, { nullable: true })
   participants?: string;
+
+  @Field(() => Meeting, { nullable: true })
+  meeting?: Meeting;
 }

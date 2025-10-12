@@ -79,7 +79,11 @@ export interface PaginatedRecordingResponse {
 }
 
 export interface Meeting {
-    id: number;
+    id: string;
+    name?: Nullable<string>;
+    googleId?: Nullable<string>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export interface UserMeeting {
@@ -93,6 +97,7 @@ export interface UserMeeting {
     createdAt: DateTime;
     updatedAt: DateTime;
     participants?: Nullable<string>;
+    meeting?: Nullable<Meeting>;
 }
 
 export interface UserMeetingEdge {

@@ -1,4 +1,12 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Int,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { UserMeetingService } from './user-meeting.service';
 import { UserMeeting } from './entities/user-meeting.entity';
 import { UseGuards } from '@nestjs/common';
@@ -14,10 +22,15 @@ import {
 } from 'src/lib/utils/serviceUtils/paginatedRequest';
 import { CurrentUser } from 'src/auth/dto/current-user.decorator';
 import { User } from 'src/users/entities/user.entity';
+import { Meeting } from 'src/meeting/entities/meeting.entity';
+import { MeetingService } from 'src/meeting/meeting.service';
 
 @Resolver(() => UserMeeting)
 export class UserMeetingResolver {
-  constructor(private readonly userMeetingService: UserMeetingService) {}
+  constructor(
+    private readonly userMeetingService: UserMeetingService,
+    private readonly meetingService: MeetingService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -72,5 +85,10 @@ export class UserMeetingResolver {
     } catch (error) {
       console.log('error -->', error);
     }
+  }
+
+  @ResolveField(() => Meeting)
+  async meeting(@Parent() userMeeting: UserMeeting) {
+    return this.meetingService.findOne(userMeeting.meetingId);
   }
 }
