@@ -30,5 +30,5 @@ export class UserMeeting {
   updatedAt: Date;
 
   @Field(() => String, { nullable: true })
-  participants: string;
+  participants?: string;
 }

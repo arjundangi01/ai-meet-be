@@ -3,4 +3,5 @@ export class MeetingEndedDto {
   transcript?: string;
   fileUrl?: string;
   participantNames: string[];
+  meetingName: string;
 }

@@ -84,6 +84,11 @@ export class WebhookService {
         status: USER_MEETING_STATUS.ENDED,
         summary: summary ?? '',
         participants: JSON.stringify(body.participantNames),
+        meeting: {
+          update: {
+            name: body.meetingName,
+          },
+        },
       },
     });
 
