@@ -13,7 +13,7 @@ export class GeminiService {
   private readonly gemini = new GoogleGenAI({
     apiKey: envConfig.GEMINI_API_KEY,
   });
-  private readonly geminiModalName = 'gemini-2.5-pro';
+  private readonly geminiModalName = 'gemini-2.5-flash';
 
   async generateSummary(transcript: string) {
     try {
@@ -44,6 +44,7 @@ Your job is to produce a **structured summary**.
       // console.log(response.candidates[0].content.parts[0].text);
       return response.candidates[0].content.parts[0]?.text || '';
     } catch (error) {
+      console.log('Error generating summary', error);
       return '';
     }
   }

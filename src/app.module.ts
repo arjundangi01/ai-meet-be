@@ -19,9 +19,13 @@ import { GeminiModule } from './gemini/gemini.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { GqlThrottlerGuard } from './lib/common/guard/throttler-guard';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
+
     AuthModule,
     UsersModule,
     PrismaModule,
@@ -57,6 +61,7 @@ import { GqlThrottlerGuard } from './lib/common/guard/throttler-guard';
         },
       ],
     }),
+    CronModule,
   ],
   controllers: [AppController],
   providers: [

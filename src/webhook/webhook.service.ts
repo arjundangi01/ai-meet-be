@@ -33,6 +33,12 @@ export class WebhookService {
   }
 
   async handleMeetingEnded(body: MeetingEndedDto) {
+    const summary = (await this.geminiService.generateSummary(
+      JSON.stringify(body.transcript),
+    )) as string;
+
+    console.log('Summary generated', summary?.length);
+
     const userMeeting = await this.prisma.userMeeting.findUnique({
       where: { id: body.userMeetingId },
     });
@@ -50,7 +56,7 @@ export class WebhookService {
       if (err.statusCode === 304) {
         console.log(`Container  already stopped.`);
       } else {
-        throw err;
+        console.log('Error stopping container', err);
       }
     });
 
@@ -69,12 +75,6 @@ export class WebhookService {
       });
     }
 
-    // generate summary
-    const summary = (await this.geminiService.generateSummary(
-      JSON.stringify(body.transcript),
-    )) as string;
-
-    console.log('Summary generated');
     //  update user meeting
     await this.prisma.userMeeting.update({
       where: { id: body.userMeetingId },
